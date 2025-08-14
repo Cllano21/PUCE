@@ -1,7 +1,7 @@
 import pandas as pd
 import dash
 from dash import dcc, html, Input, Output
-
+import os
 # Crear DataFrame con tus datos
 datos = [
     ("1840", "QUITO"),
