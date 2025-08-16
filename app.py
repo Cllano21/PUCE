@@ -267,12 +267,6 @@ df_graduados["Graduados"] = pd.to_numeric(df_graduados["Graduados"], errors="coe
 df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="coerce")
 df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
 df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")  # Nuevo
-
-import pandas as pd
-import dash
-from dash import dcc, html, Input, Output, State, callback_context
-import os
-
 # Crear DataFrames (los datos permanecen iguales)
 # ... [LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE df_sector] ...
 
