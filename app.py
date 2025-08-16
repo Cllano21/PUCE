@@ -56,13 +56,50 @@ datos_empleo = [
     ("2023", "Nacional", "Ya contaba con un empleo al momento de mi graduación", "844"),
 ]
 
+datos_situacion = [
+    ("2023", "Ambato", "Trabajando", "214"),
+    ("2023", "Ambato", "Estudiando a tiempo completo por lo que no puedo trabajar", "17"),
+    ("2023", "Ambato", "No estoy trabajando pero busco empleo", "51"),
+    ("2023", "Ambato", "Soy emprendedor", "34"),
+    ("2023", "Ambato", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "6"),
+    ("2023", "Esmeraldas", "Trabajando", "25"),
+    ("2023", "Esmeraldas", "Estudiando a tiempo completo por lo que no puedo trabajar", "2"),
+    ("2023", "Esmeraldas", "No estoy trabajando pero busco empleo", "22"),
+    ("2023", "Esmeraldas", "Soy emprendedor", "4"),
+    ("2023", "Ibarra", "Trabajando", "125"),
+    ("2023", "Ibarra", "Estudiando a tiempo completo por lo que no puedo trabajar", "1"),
+    ("2023", "Ibarra", "No estoy trabajando pero busco empleo", "58"),
+    ("2023", "Ibarra", "Soy emprendedor", "37"),
+    ("2023", "Ibarra", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "4"),
+    ("2023", "Quito", "Trabajando", "603"),
+    ("2023", "Quito", "Estudiando a tiempo completo por lo que no puedo trabajar", "25"),
+    ("2023", "Quito", "No estoy trabajando pero busco empleo", "203"),
+    ("2023", "Quito", "Soy emprendedor", "59"),
+    ("2023", "Quito", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "18"),
+    ("2023", "Santo Domingo", "Trabajando", "35"),
+    ("2023", "Santo Domingo", "No estoy trabajando pero busco empleo", "34"),
+    ("2023", "Santo Domingo", "Soy emprendedor", "3"),
+    ("2023", "Santo Domingo", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "1"),
+    ("2023", "Manabí", "Trabajando", "142"),
+    ("2023", "Manabí", "Estudiando a tiempo completo por lo que no puedo trabajar", "10"),
+    ("2023", "Manabí", "No estoy trabajando pero busco empleo", "46"),
+    ("2023", "Manabí", "Soy emprendedor", "16"),
+    ("2023", "Nacional", "Trabajando", "1144"),
+    ("2023", "Nacional", "Estudiando a tiempo completo por lo que no puedo trabajar", "55"),
+    ("2023", "Nacional", "No estoy trabajando pero busco empleo", "414"),
+    ("2023", "Nacional", "Soy emprendedor", "153"),
+    ("2023", "Nacional", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "29"),
+]
+
 # Crear DataFrames con la columna de año
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
+df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
 
 # Convertir a numérico
 df_graduados["Graduados"] = pd.to_numeric(df_graduados["Graduados"], errors="coerce")
 df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="coerce")
+df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
 
 # Obtener listas únicas para los dropdowns
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
@@ -148,14 +185,32 @@ app.layout = html.Div(style={
         "textAlign": "center"
     }),
     
-    # Tabla para mostrar los datos de empleo
-    html.Div([
-        html.H2("Tiempo para Conseguir Empleo", style={
-            "textAlign": "center",
-            "color": "#1e3a8a",
-            "marginBottom": "20px"
-        }),
-        html.Div(id="tabla-empleo")
+    # Contenedor para las dos tablas (lado a lado)
+    html.Div(style={
+        "display": "flex",
+        "gap": "20px",
+        "marginBottom": "30px",
+        "flexWrap": "wrap"
+    }, children=[
+        # Tabla para mostrar los datos de empleo
+        html.Div(style={"flex": "1", "minWidth": "400px"}, children=[
+            html.H2("Tiempo para Conseguir Empleo", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px"
+            }),
+            html.Div(id="tabla-empleo")
+        ]),
+        
+        # Nueva tabla para mostrar la situación laboral
+        html.Div(style={"flex": "1", "minWidth": "400px"}, children=[
+            html.H2("Situación Laboral Actual", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px"
+            }),
+            html.Div(id="tabla-situacion")
+        ])
     ])
 ])
 
@@ -240,7 +295,7 @@ def actualizar_tabla_empleo(anio_seleccionado, sede_seleccionada):
     else:
         # Crear encabezado con año y sede
         encabezado = html.Tr([
-            html.Th("Situación Laboral", style={"padding": "10px 15px", "textAlign": "left"}),
+            html.Th("Consiguió empleo", style={"padding": "10px 15px", "textAlign": "left"}),
             html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right"}),
             html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right"})
         ])
@@ -250,6 +305,64 @@ def actualizar_tabla_empleo(anio_seleccionado, sede_seleccionada):
         for _, row in df_filtrado.iterrows():
             filas.append(html.Tr([
                 html.Td(row["Conseguir empleo"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb"}),
+                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"}),
+                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"})
+            ]))
+        
+        # Crear tabla completa
+        return html.Table(
+            [encabezado] + filas,
+            style={
+                "width": "100%",
+                "borderCollapse": "collapse",
+                "backgroundColor": "white",
+                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
+                "borderRadius": "8px",
+                "overflow": "hidden"
+            }
+        )
+
+# Nuevo callback para actualizar la tabla de situación laboral
+@app.callback(
+    Output("tabla-situacion", "children"),
+    [Input("selector-anio", "value"),
+     Input("selector-sedes", "value")]
+)
+def actualizar_tabla_situacion(anio_seleccionado, sede_seleccionada):
+    # Filtrar datos de situación laboral por año y sede
+    df_filtrado = df_situacion[
+        (df_situacion["Año"] == anio_seleccionado) & 
+        (df_situacion["SEDES"] == sede_seleccionada)
+    ].copy()
+    
+    # Calcular porcentajes si hay datos
+    if not df_filtrado.empty:
+        total_participantes = df_filtrado["Participantes"].sum()
+        if total_participantes > 0:
+            df_filtrado["Porcentaje"] = (df_filtrado["Participantes"] / total_participantes * 100).round(1)
+        else:
+            df_filtrado["Porcentaje"] = 0.0
+    
+    # Crear tabla
+    if df_filtrado.empty:
+        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
+            "textAlign": "center",
+            "padding": "20px",
+            "color": "#dc2626"
+        })
+    else:
+        # Crear encabezado con año y sede
+        encabezado = html.Tr([
+            html.Th("Situación Laboral", style={"padding": "10px 15px", "textAlign": "left"}),
+            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right"}),
+            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right"})
+        ])
+        
+        # Crear filas de datos
+        filas = []
+        for _, row in df_filtrado.iterrows():
+            filas.append(html.Tr([
+                html.Td(row["Situación laboral"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb"}),
                 html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"}),
                 html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"})
             ]))
