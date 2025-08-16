@@ -2,6 +2,7 @@ import pandas as pd
 import dash
 from dash import dcc, html, Input, Output, State
 import os
+from dash import callback_context  # Importar callback_context para manejar eventos
 # Crear DataFrames con tus datos
 datos_graduados = [
 ("2023", "Quito", "4014"),
@@ -270,10 +271,14 @@ df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="c
 # Crear DataFrames (los datos permanecen iguales)
 # ... [LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE df_sector] ...
 
+
+
+# Crear DataFrames (los datos permanecen iguales)
+# ... [LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE df_sector] ...
+
 # Obtener listas únicas para los dropdowns
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
-sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist() if s != "Nacional"], key=lambda x: x.lower())
-sedes_disponibles_con_nacional = sedes_disponibles + ["Nacional"]
+sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist()], key=lambda x: x.lower())
 
 # App
 app = dash.Dash(__name__)
@@ -313,7 +318,7 @@ app.layout = html.Div(style={
             )
         ]),
         
-        # Dropdown para seleccionar sede
+        # Dropdown para seleccionar sede (ahora incluye Nacional)
         html.Div(style={"flex": "2", "minWidth": "250px"}, children=[
             html.Label("Seleccionar Sede:", style={"fontWeight": "bold", "marginBottom": "5px"}),
             dcc.Dropdown(
@@ -324,43 +329,24 @@ app.layout = html.Div(style={
             )
         ]),
         
-        # Botones para mostrar datos nacionales y todos los años
-        html.Div(style={"flex": "1", "minWidth": "150px", "display": "flex", "flexDirection": "column", "gap": "10px"}, children=[
-            html.Div([
-                html.Label("Vistas:", style={"fontWeight": "bold", "marginBottom": "5px"}),
-            ]),
-            html.Div(style={"display": "flex", "gap": "10px"}, children=[
-                html.Button(
-                    "Ver Nacional",
-                    id="boton-nacional",
-                    n_clicks=0,
-                    style={
-                        "flex": "1",
-                        "padding": "10px",
-                        "backgroundColor": "#1e3a8a",
-                        "color": "white",
-                        "border": "none",
-                        "borderRadius": "4px",
-                        "cursor": "pointer",
-                        "fontWeight": "bold"
-                    }
-                ),
-                html.Button(
-                    "Todos los años",
-                    id="boton-todos-anios",
-                    n_clicks=0,
-                    style={
-                        "flex": "1",
-                        "padding": "10px",
-                        "backgroundColor": "#1e3a8a",
-                        "color": "white",
-                        "border": "none",
-                        "borderRadius": "4px",
-                        "cursor": "pointer",
-                        "fontWeight": "bold"
-                    }
-                )
-            ])
+        # Botón para mostrar todos los años
+        html.Div(style={"flex": "1", "minWidth": "150px"}, children=[
+            html.Label("Acción rápida:", style={"fontWeight": "bold", "marginBottom": "5px"}),
+            html.Button(
+                "Todos los años",
+                id="boton-todos-anios",
+                n_clicks=0,
+                style={
+                    "width": "100%",
+                    "padding": "10px",
+                    "backgroundColor": "#1e3a8a",
+                    "color": "white",
+                    "border": "none",
+                    "borderRadius": "4px",
+                    "cursor": "pointer",
+                    "fontWeight": "bold"
+                }
+            )
         ])
     ]),
     
@@ -416,29 +402,14 @@ app.layout = html.Div(style={
     ])
 ])
 
-# Callbacks para manejar los botones
+# Callback para manejar el botón "Todos los años"
 @app.callback(
-    [Output("selector-sedes", "value"),
-     Output("selector-anio", "value")],
-    [Input("boton-nacional", "n_clicks"),
-     Input("boton-todos-anios", "n_clicks")],
-    [State("selector-sedes", "value"),
-     State("selector-anio", "value")],
+    Output("selector-anio", "value"),
+    Input("boton-todos-anios", "n_clicks"),
     prevent_initial_call=True
 )
-def manejar_botones(n_clicks_nacional, n_clicks_todos, sede_actual, anio_actual):
-    ctx = callback_context
-    if not ctx.triggered:
-        return sede_actual, anio_actual
-        
-    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    
-    if button_id == "boton-nacional":
-        return "Nacional", anio_actual
-    elif button_id == "boton-todos-anios":
-        return sede_actual, "Todos"
-    
-    return sede_actual, anio_actual
+def manejar_boton_todos_anios(n_clicks):
+    return "Todos"
 
 # Callback para actualizar el número de graduados
 @app.callback(
@@ -510,7 +481,8 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
         df_pivot = df_pivot.fillna(0)
         
         # Calcular totales
-        df_pivot["Total"] = df_pivot[años_disponibles].sum(axis=1)
+        años_cols = [str(a) for a in años_disponibles]
+        df_pivot["Total"] = df_pivot[años_cols].sum(axis=1)
         total_general = df_pivot["Total"].sum()
         
         # Calcular porcentajes
@@ -533,7 +505,7 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
             celda_categoria = html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
             celdas_anios = []
             for año in años_disponibles:
-                valor = int(row[año]) if año in df_pivot.columns else 0
+                valor = int(row[str(año)]) if str(año) in df_pivot.columns else 0
                 celdas_anios.append(html.Td(f"{valor:,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}))
             
             celda_total = html.Td(f"{int(row['Total']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
