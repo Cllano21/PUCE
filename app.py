@@ -268,6 +268,14 @@ df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="c
 df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
 df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")  # Nuevo
 
+import pandas as pd
+import dash
+from dash import dcc, html, Input, Output, State, callback_context
+import os
+
+# Crear DataFrames (los datos permanecen iguales)
+# ... [LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE df_sector] ...
+
 # Obtener listas únicas para los dropdowns
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
 sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist() if s != "Nacional"], key=lambda x: x.lower())
@@ -280,7 +288,7 @@ server = app.server
 app.layout = html.Div(style={
     "fontFamily": "Arial, sans-serif",
     "padding": "20px",
-    "maxWidth": "1400px",  # Aumentado para acomodar 3 tablas
+    "maxWidth": "1400px",
     "margin": "0 auto",
     "backgroundColor": "#f8f9fa"
 }, children=[
@@ -304,7 +312,8 @@ app.layout = html.Div(style={
             html.Label("Seleccionar Año:", style={"fontWeight": "bold", "marginBottom": "5px"}),
             dcc.Dropdown(
                 id="selector-anio",
-                options=[{"label": año, "value": año} for año in años_disponibles],
+                options=[{"label": año, "value": año} for año in años_disponibles] + 
+                        [{"label": "Todos los años", "value": "Todos"}],
                 value=años_disponibles[0] if años_disponibles else None,
                 clearable=False
             )
@@ -321,24 +330,43 @@ app.layout = html.Div(style={
             )
         ]),
         
-        # Botón para mostrar datos nacionales
-        html.Div(style={"flex": "1", "minWidth": "150px"}, children=[
-            html.Label("Vista Nacional:", style={"fontWeight": "bold", "marginBottom": "5px"}),
-            html.Button(
-                "Ver Nacional",
-                id="boton-nacional",
-                n_clicks=0,
-                style={
-                    "width": "100%",
-                    "padding": "10px",
-                    "backgroundColor": "#1e3a8a",
-                    "color": "white",
-                    "border": "none",
-                    "borderRadius": "4px",
-                    "cursor": "pointer",
-                    "fontWeight": "bold"
-                }
-            )
+        # Botones para mostrar datos nacionales y todos los años
+        html.Div(style={"flex": "1", "minWidth": "150px", "display": "flex", "flexDirection": "column", "gap": "10px"}, children=[
+            html.Div([
+                html.Label("Vistas:", style={"fontWeight": "bold", "marginBottom": "5px"}),
+            ]),
+            html.Div(style={"display": "flex", "gap": "10px"}, children=[
+                html.Button(
+                    "Ver Nacional",
+                    id="boton-nacional",
+                    n_clicks=0,
+                    style={
+                        "flex": "1",
+                        "padding": "10px",
+                        "backgroundColor": "#1e3a8a",
+                        "color": "white",
+                        "border": "none",
+                        "borderRadius": "4px",
+                        "cursor": "pointer",
+                        "fontWeight": "bold"
+                    }
+                ),
+                html.Button(
+                    "Todos los años",
+                    id="boton-todos-anios",
+                    n_clicks=0,
+                    style={
+                        "flex": "1",
+                        "padding": "10px",
+                        "backgroundColor": "#1e3a8a",
+                        "color": "white",
+                        "border": "none",
+                        "borderRadius": "4px",
+                        "cursor": "pointer",
+                        "fontWeight": "bold"
+                    }
+                )
+            ])
         ])
     ]),
     
@@ -352,56 +380,71 @@ app.layout = html.Div(style={
         "textAlign": "center"
     }),
     
-    # Contenedor para las tres tablas (lado a lado)
+    # Contenedor para las tres tablas
     html.Div(style={
         "display": "flex",
         "gap": "20px",
         "marginBottom": "30px",
         "flexWrap": "wrap"
     }, children=[
-        # Tabla para mostrar los datos de empleo
+        # Tabla de empleo
         html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
             html.H2("Tiempo para Conseguir Empleo", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
                 "marginBottom": "20px",
-                "fontSize": "20px"  # Reducido para caber en 3 columnas
+                "fontSize": "20px"
             }),
             html.Div(id="tabla-empleo")
         ]),
         
-        # Tabla para mostrar la situación laboral
+        # Tabla de situación laboral
         html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
             html.H2("Situación Laboral Actual", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
                 "marginBottom": "20px",
-                "fontSize": "20px"  # Reducido para caber en 3 columnas
+                "fontSize": "20px"
             }),
             html.Div(id="tabla-situacion")
         ]),
         
-        # Nueva tabla para mostrar el sector laboral
+        # Tabla de sector laboral
         html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
             html.H2("Sector Laboral", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
                 "marginBottom": "20px",
-                "fontSize": "20px"  # Reducido para caber en 3 columnas
+                "fontSize": "20px"
             }),
             html.Div(id="tabla-sector")
         ])
     ])
 ])
 
-# Callback para manejar el botón "Nacional"
+# Callbacks para manejar los botones
 @app.callback(
-    Output("selector-sedes", "value"),
-    Input("boton-nacional", "n_clicks"),
+    [Output("selector-sedes", "value"),
+     Output("selector-anio", "value")],
+    [Input("boton-nacional", "n_clicks"),
+     Input("boton-todos-anios", "n_clicks")],
+    [State("selector-sedes", "value"),
+     State("selector-anio", "value")],
     prevent_initial_call=True
 )
-def mostrar_datos_nacionales(n_clicks):
-    return "Nacional"
+def manejar_botones(n_clicks_nacional, n_clicks_todos, sede_actual, anio_actual):
+    ctx = callback_context
+    if not ctx.triggered:
+        return sede_actual, anio_actual
+        
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    if button_id == "boton-nacional":
+        return "Nacional", anio_actual
+    elif button_id == "boton-todos-anios":
+        return sede_actual, "Todos"
+    
+    return sede_actual, anio_actual
 
 # Callback para actualizar el número de graduados
 @app.callback(
@@ -410,11 +453,25 @@ def mostrar_datos_nacionales(n_clicks):
      Input("selector-sedes", "value")]
 )
 def actualizar_numero_graduados(anio_seleccionado, sede_seleccionada):
-    # Filtrar por año y sede
-    df_filtrado = df_graduados[
-        (df_graduados["Año"] == anio_seleccionado) & 
-        (df_graduados["SEDES"] == sede_seleccionada)
-    ]
+    # Filtrar por sede
+    df_filtrado = df_graduados[df_graduados["SEDES"] == sede_seleccionada]
+    
+    # Manejar caso de "Todos los años"
+    if anio_seleccionado == "Todos":
+        resultado = df_filtrado["Graduados"].sum()
+        return html.Div([
+            html.H3(f"Sede: {sede_seleccionada} (Todos los años)"),
+            html.P(f"Total de graduados: {int(resultado):,}", style={
+                "fontSize": "32px",
+                "color": "#1e3a8a",
+                "fontWeight": "bold",
+                "margin": "10px 0"
+            }),
+            html.Small("Datos acumulados de todos los años", style={"color": "#4b5563"})
+        ])
+    
+    # Filtrar por año específico
+    df_filtrado = df_filtrado[df_filtrado["Año"] == anio_seleccionado]
     
     # Obtener el resultado
     if not df_filtrado.empty:
@@ -444,179 +501,151 @@ def actualizar_numero_graduados(anio_seleccionado, sede_seleccionada):
             html.Small("Datos de graduados disponibles", style={"color": "#4b5563"})
         ])
 
-# Callback para actualizar la tabla de empleo
+# Función para crear tabla con datos de múltiples años
+def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_seleccionado, sede_seleccionada):
+    # Filtrar por sede
+    df_filtrado = df[df["SEDES"] == sede_seleccionada]
+    
+    # Manejar caso de "Todos los años"
+    if anio_seleccionado == "Todos":
+        # Agrupar por año y categoría
+        df_agrupado = df_filtrado.groupby(["Año", categoria_col])[participantes_col].sum().reset_index()
+        
+        # Pivotar para tener años como columnas
+        df_pivot = df_agrupado.pivot(index=categoria_col, columns="Año", values=participantes_col).reset_index()
+        df_pivot = df_pivot.fillna(0)
+        
+        # Calcular totales
+        df_pivot["Total"] = df_pivot[años_disponibles].sum(axis=1)
+        total_general = df_pivot["Total"].sum()
+        
+        # Calcular porcentajes
+        if total_general > 0:
+            df_pivot["% Total"] = (df_pivot["Total"] / total_general * 100).round(1)
+        else:
+            df_pivot["% Total"] = 0.0
+        
+        # Crear encabezado
+        encabezado = [html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"})]
+        for año in años_disponibles:
+            encabezado.append(html.Th(año, style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado.append(html.Th("Total", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado.append(html.Th("%", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado = [html.Tr(encabezado)]
+        
+        # Crear filas de datos
+        filas = []
+        for _, row in df_pivot.iterrows():
+            celda_categoria = html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            celdas_anios = []
+            for año in años_disponibles:
+                valor = int(row[año]) if año in df_pivot.columns else 0
+                celdas_anios.append(html.Td(f"{valor:,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}))
+            
+            celda_total = html.Td(f"{int(row['Total']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            celda_porcentaje = html.Td(f"{row['% Total']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            
+            filas.append(html.Tr([celda_categoria] + celdas_anios + [celda_total, celda_porcentaje]))
+        
+        # Crear tabla completa
+        return html.Table(
+            encabezado + filas,
+            style={
+                "width": "100%",
+                "borderCollapse": "collapse",
+                "backgroundColor": "white",
+                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
+                "borderRadius": "8px",
+                "overflow": "hidden"
+            }
+        )
+    
+    # Caso para un solo año
+    df_filtrado = df_filtrado[df_filtrado["Año"] == anio_seleccionado]
+    
+    if df_filtrado.empty:
+        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
+            "textAlign": "center",
+            "padding": "20px",
+            "color": "#dc2626"
+        })
+    
+    # Calcular porcentajes
+    total_participantes = df_filtrado[participantes_col].sum()
+    if total_participantes > 0:
+        df_filtrado["Porcentaje"] = (df_filtrado[participantes_col] / total_participantes * 100).round(1)
+    else:
+        df_filtrado["Porcentaje"] = 0.0
+    
+    # Crear tabla simple
+    encabezado = html.Tr([
+        html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
+        html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
+        html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
+    ])
+    
+    filas = []
+    for _, row in df_filtrado.iterrows():
+        filas.append(html.Tr([
+            html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+            html.Td(f"{int(row[participantes_col]):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+            html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+        ]))
+    
+    return html.Table(
+        [encabezado] + filas,
+        style={
+            "width": "100%",
+            "borderCollapse": "collapse",
+            "backgroundColor": "white",
+            "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
+            "borderRadius": "8px",
+            "overflow": "hidden"
+        }
+    )
+
+# Callbacks para actualizar las tablas
 @app.callback(
     Output("tabla-empleo", "children"),
     [Input("selector-anio", "value"),
      Input("selector-sedes", "value")]
 )
 def actualizar_tabla_empleo(anio_seleccionado, sede_seleccionada):
-    # Filtrar datos de empleo por año y sede
-    df_filtrado = df_empleo[
-        (df_empleo["Año"] == anio_seleccionado) & 
-        (df_empleo["SEDES"] == sede_seleccionada)
-    ].copy()
-    
-    # Calcular porcentajes si hay datos
-    if not df_filtrado.empty:
-        total_participantes = df_filtrado["Participantes"].sum()
-        if total_participantes > 0:
-            df_filtrado["Porcentaje"] = (df_filtrado["Participantes"] / total_participantes * 100).round(1)
-        else:
-            df_filtrado["Porcentaje"] = 0.0
-    
-    # Crear tabla
-    if df_filtrado.empty:
-        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
-            "textAlign": "center",
-            "padding": "20px",
-            "color": "#dc2626"
-        })
-    else:
-        # Crear encabezado
-        encabezado = html.Tr([
-            html.Th("Consiguió empleo", style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
-            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
-            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
-        ])
-        
-        # Crear filas de datos
-        filas = []
-        for _, row in df_filtrado.iterrows():
-            filas.append(html.Tr([
-                html.Td(row["Conseguir empleo"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
-            ]))
-        
-        # Crear tabla completa
-        return html.Table(
-            [encabezado] + filas,
-            style={
-                "width": "100%",
-                "borderCollapse": "collapse",
-                "backgroundColor": "white",
-                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
-                "borderRadius": "8px",
-                "overflow": "hidden"
-            }
-        )
+    return crear_tabla_con_multianios(
+        df_empleo, 
+        "Conseguir empleo", 
+        "Participantes",
+        anio_seleccionado, 
+        sede_seleccionada
+    )
 
-# Callback para actualizar la tabla de situación laboral
 @app.callback(
     Output("tabla-situacion", "children"),
     [Input("selector-anio", "value"),
      Input("selector-sedes", "value")]
 )
 def actualizar_tabla_situacion(anio_seleccionado, sede_seleccionada):
-    # Filtrar datos de situación laboral por año y sede
-    df_filtrado = df_situacion[
-        (df_situacion["Año"] == anio_seleccionado) & 
-        (df_situacion["SEDES"] == sede_seleccionada)
-    ].copy()
-    
-    # Calcular porcentajes si hay datos
-    if not df_filtrado.empty:
-        total_participantes = df_filtrado["Participantes"].sum()
-        if total_participantes > 0:
-            df_filtrado["Porcentaje"] = (df_filtrado["Participantes"] / total_participantes * 100).round(1)
-        else:
-            df_filtrado["Porcentaje"] = 0.0
-    
-    # Crear tabla
-    if df_filtrado.empty:
-        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
-            "textAlign": "center",
-            "padding": "20px",
-            "color": "#dc2626"
-        })
-    else:
-        # Crear encabezado
-        encabezado = html.Tr([
-            html.Th("Situación Laboral", style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
-            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
-            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
-        ])
-        
-        # Crear filas de datos
-        filas = []
-        for _, row in df_filtrado.iterrows():
-            filas.append(html.Tr([
-                html.Td(row["Situación laboral"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
-            ]))
-        
-        # Crear tabla completa
-        return html.Table(
-            [encabezado] + filas,
-            style={
-                "width": "100%",
-                "borderCollapse": "collapse",
-                "backgroundColor": "white",
-                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
-                "borderRadius": "8px",
-                "overflow": "hidden"
-            }
-        )
+    return crear_tabla_con_multianios(
+        df_situacion, 
+        "Situación laboral", 
+        "Participantes",
+        anio_seleccionado, 
+        sede_seleccionada
+    )
 
-# Nuevo callback para actualizar la tabla de sector laboral
 @app.callback(
     Output("tabla-sector", "children"),
     [Input("selector-anio", "value"),
      Input("selector-sedes", "value")]
 )
 def actualizar_tabla_sector(anio_seleccionado, sede_seleccionada):
-    # Filtrar datos de sector por año y sede
-    df_filtrado = df_sector[
-        (df_sector["Año"] == anio_seleccionado) & 
-        (df_sector["SEDES"] == sede_seleccionada)
-    ].copy()
-    
-    # Calcular porcentajes si hay datos
-    if not df_filtrado.empty:
-        total_participantes = df_filtrado["Participantes"].sum()
-        if total_participantes > 0:
-            df_filtrado["Porcentaje"] = (df_filtrado["Participantes"] / total_participantes * 100).round(1)
-        else:
-            df_filtrado["Porcentaje"] = 0.0
-    
-    # Crear tabla
-    if df_filtrado.empty:
-        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
-            "textAlign": "center",
-            "padding": "20px",
-            "color": "#dc2626"
-        })
-    else:
-        # Crear encabezado
-        encabezado = html.Tr([
-            html.Th("Sector Laboral", style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
-            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
-            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
-        ])
-        
-        # Crear filas de datos
-        filas = []
-        for _, row in df_filtrado.iterrows():
-            filas.append(html.Tr([
-                html.Td(row["Sector"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
-            ]))
-        
-        # Crear tabla completa
-        return html.Table(
-            [encabezado] + filas,
-            style={
-                "width": "100%",
-                "borderCollapse": "collapse",
-                "backgroundColor": "white",
-                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
-                "borderRadius": "8px",
-                "overflow": "hidden"
-            }
-        )
+    return crear_tabla_con_multianios(
+        df_sector, 
+        "Sector", 
+        "Participantes",
+        anio_seleccionado, 
+        sede_seleccionada
+    )
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8050))
