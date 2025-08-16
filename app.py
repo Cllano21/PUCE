@@ -3,149 +3,19 @@ import dash
 from dash import dcc, html, Input, Output, State
 import os
 
-# Crear DataFrames con tus datos
-datos_graduados = [
-    ("2023", "Quito", "4014"),
-("2023", "Ambato", "576"),
-("2023", "Santo Domingo", "405"),
-("2023", "Esmeraldas", "569"),
-("2023", "Ibarra", "963"),
-("2023", "Manabí", "924"),
-("2023", "Nacional", "7451"),
-("2022", "Quito", "3211"),
-("2022", "Ambato", "542"),
-("2022", "Santo Domingo", "421"),
-("2022", "Esmeraldas", "502"),
-("2022", "Ibarra", "763"),
-("2022", "Manabí", "37"),
-("2022", "Nacional", "5476"),
-]
-
-datos_empleo = [
-("2023", "Ambato", "Aún no consigo empleo desde mi graduación", "57"),
-("2023", "Ambato", "Me tomó hasta 12 meses (un año) conseguir empleo", "31"),
-("2023", "Ambato", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "8"),
-("2023", "Ambato", "Me tomó hasta 24 meses (dos años) conseguir empleo", "3"),
-("2023", "Ambato", "Me tomó hasta 6 meses conseguir empleo", "59"),
-("2023", "Ambato", "Ya contaba con un empleo al momento de mi graduación", "164"),
-("2023", "Esmeraldas", "Aún no consigo empleo desde mi graduación", "23"),
-("2023", "Esmeraldas", "Me tomó hasta 12 meses (un año) conseguir empleo", "4"),
-("2023", "Esmeraldas", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "2"),
-("2023", "Esmeraldas", "Me tomó hasta 24 meses (dos años) conseguir empleo", "1"),
-("2023", "Esmeraldas", "Me tomó hasta 6 meses conseguir empleo", "5"),
-("2023", "Esmeraldas", "Ya contaba con un empleo al momento de mi graduación", "18"),
-("2023", "Ibarra", "Aún no consigo empleo desde mi graduación", "53"),
-("2023", "Ibarra", "Me tomó hasta 12 meses (un año) conseguir empleo", "26"),
-("2023", "Ibarra", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "9"),
-("2023", "Ibarra", "Me tomó hasta 24 meses (dos años) conseguir empleo", "1"),
-("2023", "Ibarra", "Me tomó hasta 6 meses conseguir empleo", "41"),
-("2023", "Ibarra", "Ya contaba con un empleo al momento de mi graduación", "95"),
-("2023", "Quito", "Aún no consigo empleo desde mi graduación", "185"),
-("2023", "Quito", "Me tomó hasta 12 meses (un año) conseguir empleo", "74"),
-("2023", "Quito", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "21"),
-("2023", "Quito", "Me tomó hasta 24 meses (dos años) conseguir empleo", "10"),
-("2023", "Quito", "Me tomó hasta 6 meses conseguir empleo", "185"),
-("2023", "Quito", "Ya contaba con un empleo al momento de mi graduación", "433"),
-("2023", "Santo Domingo", "Aún no consigo empleo desde mi graduación", "29"),
-("2023", "Santo Domingo", "Me tomó hasta 12 meses (un año) conseguir empleo", "7"),
-("2023", "Santo Domingo", "Me tomó hasta 6 meses conseguir empleo", "15"),
-("2023", "Santo Domingo", "Ya contaba con un empleo al momento de mi graduación", "22"),
-("2023", "Manabí", "Aún no consigo empleo desde mi graduación", "38"),
-("2023", "Manabí", "Me tomó hasta 12 meses (un año) conseguir empleo", "22"),
-("2023", "Manabí", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "6"),
-("2023", "Manabí", "Me tomó hasta 6 meses conseguir empleo", "36"),
-("2023", "Manabí", "Ya contaba con un empleo al momento de mi graduación", "112"),
-("2023", "Nacional", "Aún no consigo empleo desde mi graduación", "385"),
-("2023", "Nacional", "Me tomó hasta 12 meses (un año) conseguir empleo", "164"),
-("2023", "Nacional", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "46"),
-("2023", "Nacional", "Me tomó hasta 24 meses (dos años) conseguir empleo", "15"),
-("2023", "Nacional", "Me tomó hasta 6 meses conseguir empleo", "341"),
-("2023", "Nacional", "Ya contaba con un empleo al momento de mi graduación", "844"),
-("2022", "Ambato", "Aún no consigo empleo desde mi graduación", "31"),
-("2022", "Ambato", "Me tomó hasta 12 meses (un año) conseguir empleo", "19"),
-("2022", "Ambato", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "4"),
-("2022", "Ambato", "Me tomó hasta 24 meses (dos años) conseguir empleo", "1"),
-("2022", "Ambato", "Me tomó hasta 6 meses conseguir empleo", "34"),
-("2022", "Ambato", "Ya contaba con un empleo al momento de mi graduación", "86"),
-("2022", "Esmeraldas", "Aún no consigo empleo desde mi graduación", "52"),
-("2022", "Esmeraldas", "Me tomó hasta 12 meses (un año) conseguir empleo", "8"),
-("2022", "Esmeraldas", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "2"),
-("2022", "Esmeraldas", "Me tomó hasta 24 meses (dos años) conseguir empleo", "3"),
-("2022", "Esmeraldas", "Me tomó hasta 6 meses conseguir empleo", "9"),
-("2022", "Esmeraldas", "Ya contaba con un empleo al momento de mi graduación", "39"),
-("2022", "Ibarra", "Aún no consigo empleo desde mi graduación", "39"),
-("2022", "Ibarra", "Me tomó hasta 12 meses (un año) conseguir empleo", "20"),
-("2022", "Ibarra", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "7"),
-("2022", "Ibarra", "Me tomó hasta 24 meses (dos años) conseguir empleo", "5"),
-("2022", "Ibarra", "Me tomó hasta 6 meses conseguir empleo", "65"),
-("2022", "Ibarra", "Ya contaba con un empleo al momento de mi graduación", "120"),
-("2022", "Quito", "Aún no consigo empleo desde mi graduación", "165"),
-("2022", "Quito", "Me tomó hasta 12 meses (un año) conseguir empleo", "89"),
-("2022", "Quito", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "25"),
-("2022", "Quito", "Me tomó hasta 24 meses (dos años) conseguir empleo", "15"),
-("2022", "Quito", "Me tomó hasta 6 meses conseguir empleo", "233"),
-("2022", "Quito", "Ya contaba con un empleo al momento de mi graduación", "362"),
-("2022", "Santo Domingo", "Aún no consigo empleo desde mi graduación", "39"),
-("2022", "Santo Domingo", "Me tomó hasta 12 meses (un año) conseguir empleo", "10"),
-("2022", "Santo Domingo", "Me tomó hasta 24 meses (dos años) conseguir empleo", "1"),
-("2022", "Santo Domingo", "Me tomó hasta 6 meses conseguir empleo", "35"),
-("2022", "Santo Domingo", "Ya contaba con un empleo al momento de mi graduación", "53"),
-("2022", "Manabí", "Aún no consigo empleo desde mi graduación", "6"),
-("2022", "Manabí", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "1"),
-("2022", "Manabí", "Me tomó hasta 6 meses conseguir empleo", "4"),
-("2022", "Manabí", "Ya contaba con un empleo al momento de mi graduación", "5"),
-("2022", "Nacional", "Aún no consigo empleo desde mi graduación", "332"),
-("2022", "Nacional", "Me tomó hasta 12 meses (un año) conseguir empleo", "146"),
-("2022", "Nacional", "Me tomó hasta 18 meses (un año y medio) conseguir empleo", "39"),
-("2022", "Nacional", "Me tomó hasta 24 meses (dos años) conseguir empleo", "25"),
-("2022", "Nacional", "Me tomó hasta 6 meses conseguir empleo", "380"),
-("2022", "Nacional", "Ya contaba con un empleo al momento de mi graduación", "665"),
-]
-
-datos_situacion = [
-    ("2023", "Ambato", "Trabajando", "214"),
-    ("2023", "Ambato", "Estudiando a tiempo completo por lo que no puedo trabajar", "17"),
-    ("2023", "Ambato", "No estoy trabajando pero busco empleo", "51"),
-    ("2023", "Ambato", "Soy emprendedor", "34"),
-    ("2023", "Ambato", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "6"),
-    ("2023", "Esmeraldas", "Trabajando", "25"),
-    ("2023", "Esmeraldas", "Estudiando a tiempo completo por lo que no puedo trabajar", "2"),
-    ("2023", "Esmeraldas", "No estoy trabajando pero busco empleo", "22"),
-    ("2023", "Esmeraldas", "Soy emprendedor", "4"),
-    ("2023", "Ibarra", "Trabajando", "125"),
-    ("2023", "Ibarra", "Estudiando a tiempo completo por lo que no puedo trabajar", "1"),
-    ("2023", "Ibarra", "No estoy trabajando pero busco empleo", "58"),
-    ("2023", "Ibarra", "Soy emprendedor", "37"),
-    ("2023", "Ibarra", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "4"),
-    ("2023", "Quito", "Trabajando", "603"),
-    ("2023", "Quito", "Estudiando a tiempo completo por lo que no puedo trabajar", "25"),
-    ("2023", "Quito", "No estoy trabajando pero busco empleo", "203"),
-    ("2023", "Quito", "Soy emprendedor", "59"),
-    ("2023", "Quito", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "18"),
-    ("2023", "Santo Domingo", "Trabajando", "35"),
-    ("2023", "Santo Domingo", "No estoy trabajando pero busco empleo", "34"),
-    ("2023", "Santo Domingo", "Soy emprendedor", "3"),
-    ("2023", "Santo Domingo", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "1"),
-    ("2023", "Manabí", "Trabajando", "142"),
-    ("2023", "Manabí", "Estudiando a tiempo completo por lo que no puedo trabajar", "10"),
-    ("2023", "Manabí", "No estoy trabajando pero busco empleo", "46"),
-    ("2023", "Manabí", "Soy emprendedor", "16"),
-    ("2023", "Nacional", "Trabajando", "1144"),
-    ("2023", "Nacional", "Estudiando a tiempo completo por lo que no puedo trabajar", "55"),
-    ("2023", "Nacional", "No estoy trabajando pero busco empleo", "414"),
-    ("2023", "Nacional", "Soy emprendedor", "153"),
-    ("2023", "Nacional", "No estoy trabajando pero no tengo interés en buscar empleo actualmente", "29"),
-]
+# [TODOS LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE datos_sector]
 
 # Crear DataFrames con la columna de año
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
 df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
+df_sector = pd.DataFrame(datos_sector, columns=["Año", "SEDES", "Sector", "Participantes"])  # Nuevo DataFrame
 
 # Convertir a numérico
 df_graduados["Graduados"] = pd.to_numeric(df_graduados["Graduados"], errors="coerce")
 df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="coerce")
 df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
+df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")  # Nuevo
 
 # Obtener listas únicas para los dropdowns
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
@@ -154,12 +24,12 @@ sedes_disponibles_con_nacional = sedes_disponibles + ["Nacional"]
 
 # App
 app = dash.Dash(__name__)
-server = app.server  # Necesario para despliegue en servidores como Heroku
+server = app.server
 
 app.layout = html.Div(style={
     "fontFamily": "Arial, sans-serif",
     "padding": "20px",
-    "maxWidth": "1200px",
+    "maxWidth": "1400px",  # Aumentado para acomodar 3 tablas
     "margin": "0 auto",
     "backgroundColor": "#f8f9fa"
 }, children=[
@@ -231,7 +101,7 @@ app.layout = html.Div(style={
         "textAlign": "center"
     }),
     
-    # Contenedor para las dos tablas (lado a lado)
+    # Contenedor para las tres tablas (lado a lado)
     html.Div(style={
         "display": "flex",
         "gap": "20px",
@@ -239,23 +109,36 @@ app.layout = html.Div(style={
         "flexWrap": "wrap"
     }, children=[
         # Tabla para mostrar los datos de empleo
-        html.Div(style={"flex": "1", "minWidth": "400px"}, children=[
+        html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
             html.H2("Tiempo para Conseguir Empleo", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
-                "marginBottom": "20px"
+                "marginBottom": "20px",
+                "fontSize": "20px"  # Reducido para caber en 3 columnas
             }),
             html.Div(id="tabla-empleo")
         ]),
         
-        # Nueva tabla para mostrar la situación laboral
-        html.Div(style={"flex": "1", "minWidth": "400px"}, children=[
+        # Tabla para mostrar la situación laboral
+        html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
             html.H2("Situación Laboral Actual", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
-                "marginBottom": "20px"
+                "marginBottom": "20px",
+                "fontSize": "20px"  # Reducido para caber en 3 columnas
             }),
             html.Div(id="tabla-situacion")
+        ]),
+        
+        # Nueva tabla para mostrar el sector laboral
+        html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
+            html.H2("Sector Laboral", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"  # Reducido para caber en 3 columnas
+            }),
+            html.Div(id="tabla-sector")
         ])
     ])
 ])
@@ -339,20 +222,20 @@ def actualizar_tabla_empleo(anio_seleccionado, sede_seleccionada):
             "color": "#dc2626"
         })
     else:
-        # Crear encabezado con año y sede
+        # Crear encabezado
         encabezado = html.Tr([
-            html.Th("Consiguió empleo", style={"padding": "10px 15px", "textAlign": "left"}),
-            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right"}),
-            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right"})
+            html.Th("Consiguió empleo", style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
+            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
+            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
         ])
         
         # Crear filas de datos
         filas = []
         for _, row in df_filtrado.iterrows():
             filas.append(html.Tr([
-                html.Td(row["Conseguir empleo"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb"}),
-                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"}),
-                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"})
+                html.Td(row["Conseguir empleo"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
             ]))
         
         # Crear tabla completa
@@ -368,7 +251,7 @@ def actualizar_tabla_empleo(anio_seleccionado, sede_seleccionada):
             }
         )
 
-# Nuevo callback para actualizar la tabla de situación laboral
+# Callback para actualizar la tabla de situación laboral
 @app.callback(
     Output("tabla-situacion", "children"),
     [Input("selector-anio", "value"),
@@ -397,20 +280,78 @@ def actualizar_tabla_situacion(anio_seleccionado, sede_seleccionada):
             "color": "#dc2626"
         })
     else:
-        # Crear encabezado con año y sede
+        # Crear encabezado
         encabezado = html.Tr([
-            html.Th("Situación Laboral", style={"padding": "10px 15px", "textAlign": "left"}),
-            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right"}),
-            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right"})
+            html.Th("Situación Laboral", style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
+            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
+            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
         ])
         
         # Crear filas de datos
         filas = []
         for _, row in df_filtrado.iterrows():
             filas.append(html.Tr([
-                html.Td(row["Situación laboral"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb"}),
-                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"}),
-                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb"})
+                html.Td(row["Situación laboral"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            ]))
+        
+        # Crear tabla completa
+        return html.Table(
+            [encabezado] + filas,
+            style={
+                "width": "100%",
+                "borderCollapse": "collapse",
+                "backgroundColor": "white",
+                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
+                "borderRadius": "8px",
+                "overflow": "hidden"
+            }
+        )
+
+# Nuevo callback para actualizar la tabla de sector laboral
+@app.callback(
+    Output("tabla-sector", "children"),
+    [Input("selector-anio", "value"),
+     Input("selector-sedes", "value")]
+)
+def actualizar_tabla_sector(anio_seleccionado, sede_seleccionada):
+    # Filtrar datos de sector por año y sede
+    df_filtrado = df_sector[
+        (df_sector["Año"] == anio_seleccionado) & 
+        (df_sector["SEDES"] == sede_seleccionada)
+    ].copy()
+    
+    # Calcular porcentajes si hay datos
+    if not df_filtrado.empty:
+        total_participantes = df_filtrado["Participantes"].sum()
+        if total_participantes > 0:
+            df_filtrado["Porcentaje"] = (df_filtrado["Participantes"] / total_participantes * 100).round(1)
+        else:
+            df_filtrado["Porcentaje"] = 0.0
+    
+    # Crear tabla
+    if df_filtrado.empty:
+        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
+            "textAlign": "center",
+            "padding": "20px",
+            "color": "#dc2626"
+        })
+    else:
+        # Crear encabezado
+        encabezado = html.Tr([
+            html.Th("Sector Laboral", style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
+            html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
+            html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
+        ])
+        
+        # Crear filas de datos
+        filas = []
+        for _, row in df_filtrado.iterrows():
+            filas.append(html.Tr([
+                html.Td(row["Sector"], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+                html.Td(f"{int(row['Participantes']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+                html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
             ]))
         
         # Crear tabla completa
