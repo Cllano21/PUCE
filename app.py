@@ -583,14 +583,138 @@ datos_nivelsalario=[
 ("2021", "Nacional", "No aplica", "371"),
 ("2021", "Nacional", "No contesta", "43"),
 ]
+datos_relacion=[
+("2023", "Ambato", "1", "13"),
+("2023", "Ambato", "2", "15"),
+("2023", "Ambato", "3", "42"),
+("2023", "Ambato", "4", "66"),
+("2023", "Ambato", "5", "78"),
+("2023", "Ambato", "No aplica", "108"),
+("2023", "Esmeraldas", "2", "1"),
+("2023", "Esmeraldas", "4", "10"),
+("2023", "Esmeraldas", "5", "14"),
+("2023", "Esmeraldas", "No aplica", "28"),
+("2023", "Ibarra", "1", "8"),
+("2023", "Ibarra", "2", "2"),
+("2023", "Ibarra", "3", "22"),
+("2023", "Ibarra", "4", "48"),
+("2023", "Ibarra", "5", "45"),
+("2023", "Ibarra", "No aplica", "100"),
+("2023", "Quito", "1", "22"),
+("2023", "Quito", "2", "51"),
+("2023", "Quito", "3", "120"),
+("2023", "Quito", "4", "205"),
+("2023", "Quito", "5", "205"),
+("2023", "Quito", "No aplica", "305"),
+("2023", "Santo Domingo", "2", "2"),
+("2023", "Santo Domingo", "3", "6"),
+("2023", "Santo Domingo", "4", "15"),
+("2023", "Santo Domingo", "5", "12"),
+("2023", "Santo Domingo", "No aplica", "38"),
+("2023", "Manabí", "1", "14"),
+("2023", "Manabí", "2", "2"),
+("2023", "Manabí", "3", "23"),
+("2023", "Manabí", "4", "31"),
+("2023", "Manabí", "5", "72"),
+("2023", "Manabí", "No aplica", "72"),
+("2023", "Nacional", "1", "57"),
+("2023", "Nacional", "2", "73"),
+("2023", "Nacional", "3", "213"),
+("2023", "Nacional", "4", "375"),
+("2023", "Nacional", "5", "426"),
+("2023", "Nacional", "No aplica", "651"),
+("2022", "Ambato", "1", "7"),
+("2022", "Ambato", "2", "5"),
+("2022", "Ambato", "3", "32"),
+("2022", "Ambato", "4", "33"),
+("2022", "Ambato", "5", "51"),
+("2022", "Ambato", "No aplica", "47"),
+("2022", "Esmeraldas", "1", "2"),
+("2022", "Esmeraldas", "2", "5"),
+("2022", "Esmeraldas", "3", "6"),
+("2022", "Esmeraldas", "4", "9"),
+("2022", "Esmeraldas", "5", "28"),
+("2022", "Esmeraldas", "No aplica", "63"),
+("2022", "Ibarra", "1", "8"),
+("2022", "Ibarra", "2", "8"),
+("2022", "Ibarra", "3", "35"),
+("2022", "Ibarra", "4", "56"),
+("2022", "Ibarra", "5", "90"),
+("2022", "Ibarra", "No aplica", "59"),
+("2022", "Quito", "1", "28"),
+("2022", "Quito", "2", "47"),
+("2022", "Quito", "3", "136"),
+("2022", "Quito", "4", "181"),
+("2022", "Quito", "5", "239"),
+("2022", "Quito", "No aplica", "258"),
+("2022", "Santo Domingo", "1", "6"),
+("2022", "Santo Domingo", "2", "5"),
+("2022", "Santo Domingo", "3", "18"),
+("2022", "Santo Domingo", "4", "26"),
+("2022", "Santo Domingo", "5", "37"),
+("2022", "Santo Domingo", "No aplica", "46"),
+("2022", "Manabí", "1", "2"),
+("2022", "Manabí", "2", "2"),
+("2022", "Manabí", "3", "1"),
+("2022", "Manabí", "4", "2"),
+("2022", "Manabí", "5", "4"),
+("2022", "Manabí", "No aplica", "5"),
+("2022", "Nacional", "1", "53"),
+("2022", "Nacional", "2", "72"),
+("2022", "Nacional", "3", "228"),
+("2022", "Nacional", "4", "307"),
+("2022", "Nacional", "5", "449"),
+("2022", "Nacional", "No aplica", "478"),
+("2021", "Ambato", "1", "9"),
+("2021", "Ambato", "2", "13"),
+("2021", "Ambato", "3", "44"),
+("2021", "Ambato", "4", "63"),
+("2021", "Ambato", "5", "70"),
+("2021", "Ambato", "(en blanco)", "41"),
+("2021", "Esmeraldas", "1", "7"),
+("2021", "Esmeraldas", "2", "3"),
+("2021", "Esmeraldas", "3", "19"),
+("2021", "Esmeraldas", "4", "44"),
+("2021", "Esmeraldas", "5", "80"),
+("2021", "Esmeraldas", "(en blanco)", "78"),
+("2021", "Ibarra", "1", "13"),
+("2021", "Ibarra", "2", "6"),
+("2021", "Ibarra", "3", "35"),
+("2021", "Ibarra", "4", "53"),
+("2021", "Ibarra", "5", "84"),
+("2021", "Ibarra", "(en blanco)", "56"),
+("2021", "Quito", "1", "22"),
+("2021", "Quito", "2", "25"),
+("2021", "Quito", "3", "80"),
+("2021", "Quito", "4", "110"),
+("2021", "Quito", "5", "128"),
+("2021", "Quito", "(en blanco)", "181"),
+("2021", "Santo Domingo", "1", "3"),
+("2021", "Santo Domingo", "2", "2"),
+("2021", "Santo Domingo", "3", "10"),
+("2021", "Santo Domingo", "4", "20"),
+("2021", "Santo Domingo", "5", "20"),
+("2021", "Santo Domingo", "(en blanco)", "15"),
+("2021", "Nacional", "1", "54"),
+("2021", "Nacional", "2", "49"),
+("2021", "Nacional", "3", "188"),
+("2021", "Nacional", "4", "290"),
+("2021", "Nacional", "5", "382"),
+("2021", "Nacional", "(en blanco)", "371"),
+]
 # [TODOS LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE datos_sector]
+# Crear DataFrames con la columna de año
+
+# ... [datos_graduados, datos_empleo, datos_situacion, datos_sector, datos_ocupacion, datos_nivelsalario, datos_relacion permanecen iguales] ...
+
 # Crear DataFrames con la columna de año
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
 df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
 df_sector = pd.DataFrame(datos_sector, columns=["Año", "SEDES", "Sector", "Participantes"])
 df_ocupacion = pd.DataFrame(datos_ocupacion, columns=["Año", "SEDES", "Ocupación", "Participantes"])
-df_nivelsalarial = pd.DataFrame(datos_nivelsalario, columns=["Año", "SEDES", "Nivel Salarial", "Participantes"])  # Nuevo DataFrame
+df_nivelsalarial = pd.DataFrame(datos_nivelsalario, columns=["Año", "SEDES", "Nivel Salarial", "Participantes"])
+df_relacion = pd.DataFrame(datos_relacion, columns=["Año", "SEDES", "Relación formación-empleo", "Participantes"])  # Nuevo DataFrame
 
 # Convertir a numérico
 df_graduados["Graduados"] = pd.to_numeric(df_graduados["Graduados"], errors="coerce")
@@ -598,7 +722,8 @@ df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="c
 df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
 df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")
 df_ocupacion["Participantes"] = pd.to_numeric(df_ocupacion["Participantes"], errors="coerce")
-df_nivelsalarial["Participantes"] = pd.to_numeric(df_nivelsalarial["Participantes"], errors="coerce")  # Nuevo
+df_nivelsalarial["Participantes"] = pd.to_numeric(df_nivelsalarial["Participantes"], errors="coerce")
+df_relacion["Participantes"] = pd.to_numeric(df_relacion["Participantes"], errors="coerce")  # Nuevo
 
 # Obtener listas únicas para los dropdowns
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
@@ -684,12 +809,12 @@ app.layout = html.Div(style={
         "textAlign": "center"
     }),
     
-    # Contenedor para las tablas
+    # Contenedor para las tablas (ahora con 6 tablas)
     html.Div(style={
         "display": "flex",
+        "flexWrap": "wrap",
         "gap": "15px",
-        "marginBottom": "30px",
-        "flexWrap": "wrap"
+        "marginBottom": "30px"
     }, children=[
         # Tabla de empleo
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
@@ -735,7 +860,7 @@ app.layout = html.Div(style={
             html.Div(id="tabla-ocupacion")
         ]),
         
-        # NUEVA Tabla de nivel salarial
+        # Tabla de nivel salarial
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Nivel Salarial", style={
                 "textAlign": "center",
@@ -744,6 +869,17 @@ app.layout = html.Div(style={
                 "fontSize": "20px"
             }),
             html.Div(id="tabla-nivelsalarial")
+        ]),
+        
+        # NUEVA Tabla de relación formación-empleo
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Relación Formación-Empleo", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-relacion")
         ])
     ])
 ])
@@ -973,7 +1109,6 @@ def actualizar_tabla_ocupacion(anio_seleccionado, sede_seleccionada):
         sede_seleccionada
     )
 
-# NUEVO Callback para la tabla de nivel salarial
 @app.callback(
     Output("tabla-nivelsalarial", "children"),
     [Input("selector-anio", "value"),
@@ -983,6 +1118,38 @@ def actualizar_tabla_nivelsalarial(anio_seleccionado, sede_seleccionada):
     return crear_tabla_con_multianios(
         df_nivelsalarial, 
         "Nivel Salarial", 
+        "Participantes",
+        anio_seleccionado, 
+        sede_seleccionada
+    )
+
+# NUEVO Callback para la tabla de relación formación-empleo
+@app.callback(
+    Output("tabla-relacion", "children"),
+    [Input("selector-anio", "value"),
+     Input("selector-sedes", "value")]
+)
+def actualizar_tabla_relacion(anio_seleccionado, sede_seleccionada):
+    # Primero, mapear los números a descripciones significativas
+    mapeo_descripciones = {
+        "1": "1 (Poco relacionado)",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5 (Muy relacionado)",
+        "No aplica": "No aplica",
+        "(en blanco)": "No aplica"  # Unificar valores
+    }
+    
+    # Crear una copia para no modificar el original
+    df_relacion_mapeado = df_relacion.copy()
+    df_relacion_mapeado["Relación formación-empleo"] = df_relacion_mapeado["Relación formación-empleo"].map(
+        lambda x: mapeo_descripciones.get(x, x)
+    )
+    
+    return crear_tabla_con_multianios(
+        df_relacion_mapeado, 
+        "Relación formación-empleo", 
         "Participantes",
         anio_seleccionado, 
         sede_seleccionada
