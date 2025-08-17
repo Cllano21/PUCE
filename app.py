@@ -434,26 +434,171 @@ datos_ocupacion=[
 ("2021", "Nacional", "Otros:", "167"),
 ("2021", "Nacional", "Propietario", "53"),
 ]
+datos_nivelsalario=[
+("2023", "Ambato", "No aplica", "108"),
+("2023", "Ambato", "No contesta", "11"),
+("2023", "Ambato", "Entre uno y tres salarios básicos", "127"),
+("2023", "Ambato", "Un salario básico o menos", "28"),
+("2023", "Ambato", "Entre cinco y siete salarios básicos", "6"),
+("2023", "Ambato", "Entre tres y cinco salarios básicos", "29"),
+("2023", "Ambato", "Más de nueve salarios básicos", "1"),
+("2023", "Ambato", "Menor a 1 salario básico", "12"),
+("2023", "Esmeraldas", "No aplica", "28"),
+("2023", "Esmeraldas", "No contesta", "3"),
+("2023", "Esmeraldas", "Entre uno y tres salarios básicos", "17"),
+("2023", "Esmeraldas", "Entre cinco y siete salarios básicos", "1"),
+("2023", "Esmeraldas", "Entre tres y cinco salarios básicos", "1"),
+("2023", "Esmeraldas", "Menor a 1 salario básico", "3"),
+("2023", "Ibarra", "No aplica", "100"),
+("2023", "Ibarra", "No contesta", "4"),
+("2023", "Ibarra", "Entre uno y tres salarios básicos", "80"),
+("2023", "Ibarra", "Un salario básico o menos", "14"),
+("2023", "Ibarra", "Entre cinco y siete salarios básicos", "4"),
+("2023", "Ibarra", "Entre tres y cinco salarios básicos", "9"),
+("2023", "Ibarra", "Menor a 1 salario básico", "13"),
+("2023", "Ibarra", "Entre siete y nueve salarios básicos", "1"),
+("2023", "Quito", "No aplica", "305"),
+("2023", "Quito", "No contesta", "30"),
+("2023", "Quito", "Entre uno y tres salarios básicos", "337"),
+("2023", "Quito", "Un salario básico o menos", "39"),
+("2023", "Quito", "Entre cinco y siete salarios básicos", "49"),
+("2023", "Quito", "Entre tres y cinco salarios básicos", "113"),
+("2023", "Quito", "Más de nueve salarios básicos", "8"),
+("2023", "Quito", "Menor a 1 salario básico", "18"),
+("2023", "Quito", "Entre siete y nueve salarios básicos", "9"),
+("2023", "Santo Domingo", "No aplica", "38"),
+("2023", "Santo Domingo", "No contesta", "1"),
+("2023", "Santo Domingo", "Entre uno y tres salarios básicos", "17"),
+("2023", "Santo Domingo", "Un salario básico o menos", "4"),
+("2023", "Santo Domingo", "Entre cinco y siete salarios básicos", "2"),
+("2023", "Santo Domingo", "Entre tres y cinco salarios básicos", "6"),
+("2023", "Santo Domingo", "Menor a 1 salario básico", "5"),
+("2023", "Manabí", "No aplica", "72"),
+("2023", "Manabí", "No contesta", "9"),
+("2023", "Manabí", "Entre uno y tres salarios básicos", "76"),
+("2023", "Manabí", "Un salario básico o menos", "14"),
+("2023", "Manabí", "Entre cinco y siete salarios básicos", "5"),
+("2023", "Manabí", "Entre tres y cinco salarios básicos", "32"),
+("2023", "Manabí", "Más de nueve salarios básicos", "1"),
+("2023", "Manabí", "Menor a 1 salario básico", "4"),
+("2023", "Manabí", "Entre siete y nueve salarios básicos", "1"),
+("2023", "Nacional", "No aplica", "651"),
+("2023", "Nacional", "No contesta", "58"),
+("2023", "Nacional", "Entre uno y tres salarios básicos", "654"),
+("2023", "Nacional", "Un salario básico o menos", "99"),
+("2023", "Nacional", "Entre cinco y siete salarios básicos", "67"),
+("2023", "Nacional", "Entre tres y cinco salarios básicos", "190"),
+("2023", "Nacional", "Más de nueve salarios básicos", "10"),
+("2023", "Nacional", "Menor a 1 salario básico", "55"),
+("2023", "Nacional", "Entre siete y nueve salarios básicos", "11"),
+("2022", "Ambato", "No aplica", "47"),
+("2022", "Ambato", "No contesta", "4"),
+("2022", "Ambato", "Entre uno y tres salarios básicos", "83"),
+("2022", "Ambato", "Un salario básico o menos", "26"),
+("2022", "Ambato", "Entre tres y cinco salarios básicos", "11"),
+("2022", "Ambato", "Más de nueve salarios básicos", "2"),
+("2022", "Ambato", "Entre cinco y siete salarios básicos", "1"),
+("2022", "Ambato", "Entre siete y nueve salarios básicos", "1"),
+("2022", "Esmeraldas", "No aplica", "63"),
+("2022", "Esmeraldas", "No contesta", "4"),
+("2022", "Esmeraldas", "Entre uno y tres salarios básicos", "32"),
+("2022", "Esmeraldas", "Un salario básico o menos", "11"),
+("2022", "Esmeraldas", "Entre tres y cinco salarios básicos", "2"),
+("2022", "Esmeraldas", "Más de nueve salarios básicos", "1"),
+("2022", "Ibarra", "No aplica", "59"),
+("2022", "Ibarra", "No contesta", "13"),
+("2022", "Ibarra", "Entre uno y tres salarios básicos", "101"),
+("2022", "Ibarra", "Un salario básico o menos", "60"),
+("2022", "Ibarra", "Entre tres y cinco salarios básicos", "17"),
+("2022", "Ibarra", "Entre cinco y siete salarios básicos", "5"),
+("2022", "Ibarra", "Entre siete y nueve salarios básicos", "1"),
+("2022", "Quito", "No aplica", "258"),
+("2022", "Quito", "No contesta", "29"),
+("2022", "Quito", "Entre uno y tres salarios básicos", "321"),
+("2022", "Quito", "Un salario básico o menos", "101"),
+("2022", "Quito", "Entre tres y cinco salarios básicos", "86"),
+("2022", "Quito", "Más de nueve salarios básicos", "13"),
+("2022", "Quito", "Entre cinco y siete salarios básicos", "73"),
+("2022", "Quito", "Entre siete y nueve salarios básicos", "8"),
+("2022", "Santo Domingo", "No aplica", "46"),
+("2022", "Santo Domingo", "No contesta", "5"),
+("2022", "Santo Domingo", "Entre uno y tres salarios básicos", "64"),
+("2022", "Santo Domingo", "Un salario básico o menos", "19"),
+("2022", "Santo Domingo", "Entre tres y cinco salarios básicos", "3"),
+("2022", "Santo Domingo", "Entre siete y nueve salarios básicos", "1"),
+("2022", "Manabí", "No aplica", "5"),
+("2022", "Manabí", "Entre uno y tres salarios básicos", "6"),
+("2022", "Manabí", "Un salario básico o menos", "3"),
+("2022", "Manabí", "Entre tres y cinco salarios básicos", "2"),
+("2022", "Nacional", "No aplica", "478"),
+("2022", "Nacional", "No contesta", "55"),
+("2022", "Nacional", "Entre uno y tres salarios básicos", "607"),
+("2022", "Nacional", "Un salario básico o menos", "220"),
+("2022", "Nacional", "Entre tres y cinco salarios básicos", "121"),
+("2022", "Nacional", "Más de nueve salarios básicos", "16"),
+("2022", "Nacional", "Entre cinco y siete salarios básicos", "79"),
+("2022", "Nacional", "Entre siete y nueve salarios básicos", "11"),
+("2021", "Ambato", "Un salario básico o menos", "25"),
+("2021", "Ambato", "Entre cinco y siete salarios básicos", "5"),
+("2021", "Ambato", "Entre tres y cinco salarios básicos", "31"),
+("2021", "Ambato", "Entre uno y tres salarios básicos", "130"),
+("2021", "Ambato", "Más de nueve salarios básicos", "1"),
+("2021", "Ambato", "No aplica", "41"),
+("2021", "Ambato", "No contesta", "7"),
+("2021", "Esmeraldas", "Un salario básico o menos", "14"),
+("2021", "Esmeraldas", "Entre cinco y siete salarios básicos", "1"),
+("2021", "Esmeraldas", "Entre tres y cinco salarios básicos", "16"),
+("2021", "Esmeraldas", "Entre uno y tres salarios básicos", "112"),
+("2021", "Esmeraldas", "No aplica", "78"),
+("2021", "Esmeraldas", "No contesta", "10"),
+("2021", "Ibarra", "Un salario básico o menos", "35"),
+("2021", "Ibarra", "Entre cinco y siete salarios básicos", "6"),
+("2021", "Ibarra", "Entre siete y nueve salarios básicos", "1"),
+("2021", "Ibarra", "Entre tres y cinco salarios básicos", "26"),
+("2021", "Ibarra", "Entre uno y tres salarios básicos", "115"),
+("2021", "Ibarra", "Más de nueve salarios básicos", "1"),
+("2021", "Ibarra", "No aplica", "56"),
+("2021", "Ibarra", "No contesta", "7"),
+("2021", "Quito", "Un salario básico o menos", "44"),
+("2021", "Quito", "Entre cinco y siete salarios básicos", "17"),
+("2021", "Quito", "Entre siete y nueve salarios básicos", "2"),
+("2021", "Quito", "Entre tres y cinco salarios básicos", "56"),
+("2021", "Quito", "Entre uno y tres salarios básicos", "229"),
+("2021", "Quito", "Más de nueve salarios básicos", "1"),
+("2021", "Quito", "No aplica", "181"),
+("2021", "Quito", "No contesta", "16"),
+("2021", "Santo Domingo", "Un salario básico o menos", "11"),
+("2021", "Santo Domingo", "Entre cinco y siete salarios básicos", "1"),
+("2021", "Santo Domingo", "Entre tres y cinco salarios básicos", "3"),
+("2021", "Santo Domingo", "Entre uno y tres salarios básicos", "36"),
+("2021", "Santo Domingo", "Más de nueve salarios básicos", "1"),
+("2021", "Santo Domingo", "No aplica", "15"),
+("2021", "Santo Domingo", "No contesta", "3"),
+("2021", "Nacional", "Un salario básico o menos", "129"),
+("2021", "Nacional", "Entre cinco y siete salarios básicos", "30"),
+("2021", "Nacional", "Entre siete y nueve salarios básicos", "3"),
+("2021", "Nacional", "Entre tres y cinco salarios básicos", "132"),
+("2021", "Nacional", "Entre uno y tres salarios básicos", "622"),
+("2021", "Nacional", "Más de nueve salarios básicos", "4"),
+("2021", "Nacional", "No aplica", "371"),
+("2021", "Nacional", "No contesta", "43"),
+]
 # [TODOS LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE datos_sector]
 # Crear DataFrames con la columna de año
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
 df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
-df_sector = pd.DataFrame(datos_sector, columns=["Año", "SEDES", "Sector", "Participantes"])  # Nuevo DataFrame
+df_sector = pd.DataFrame(datos_sector, columns=["Año", "SEDES", "Sector", "Participantes"])
 df_ocupacion = pd.DataFrame(datos_ocupacion, columns=["Año", "SEDES", "Ocupación", "Participantes"])
-df_ocupacion["Participantes"] = pd.to_numeric(df_ocupacion["Participantes"], errors="coerce")
+df_nivelsalarial = pd.DataFrame(datos_nivelsalario, columns=["Año", "SEDES", "Nivel Salarial", "Participantes"])  # Nuevo DataFrame
+
 # Convertir a numérico
 df_graduados["Graduados"] = pd.to_numeric(df_graduados["Graduados"], errors="coerce")
 df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="coerce")
 df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
-df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")  # Nuevo
-# Crear DataFrames (los datos permanecen iguales)
-# ... [LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE df_sector] ...
-
-
-
-# Crear DataFrames (los datos permanecen iguales)
-# ... [LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE df_sector] ...
+df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")
+df_ocupacion["Participantes"] = pd.to_numeric(df_ocupacion["Participantes"], errors="coerce")
+df_nivelsalarial["Participantes"] = pd.to_numeric(df_nivelsalarial["Participantes"], errors="coerce")  # Nuevo
 
 # Obtener listas únicas para los dropdowns
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
@@ -497,7 +642,7 @@ app.layout = html.Div(style={
             )
         ]),
         
-        # Dropdown para seleccionar sede (ahora incluye Nacional)
+        # Dropdown para seleccionar sede
         html.Div(style={"flex": "2", "minWidth": "250px"}, children=[
             html.Label("Seleccionar Sede:", style={"fontWeight": "bold", "marginBottom": "5px"}),
             dcc.Dropdown(
@@ -539,7 +684,7 @@ app.layout = html.Div(style={
         "textAlign": "center"
     }),
     
-    # Contenedor para las tres tablas
+    # Contenedor para las tablas
     html.Div(style={
         "display": "flex",
         "gap": "15px",
@@ -547,7 +692,7 @@ app.layout = html.Div(style={
         "flexWrap": "wrap"
     }, children=[
         # Tabla de empleo
-        html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Tiempo para Conseguir Empleo", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
@@ -558,7 +703,7 @@ app.layout = html.Div(style={
         ]),
         
         # Tabla de situación laboral
-        html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Situación Laboral Actual", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
@@ -569,7 +714,7 @@ app.layout = html.Div(style={
         ]),
         
         # Tabla de sector laboral
-        html.Div(style={"flex": "1", "minWidth": "350px"}, children=[
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Sector Laboral", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
@@ -578,7 +723,9 @@ app.layout = html.Div(style={
             }),
             html.Div(id="tabla-sector")
         ]),
-                html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+        
+        # Tabla de ocupación laboral
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Ocupación Laboral", style={
                 "textAlign": "center",
                 "color": "#1e3a8a",
@@ -586,8 +733,19 @@ app.layout = html.Div(style={
                 "fontSize": "20px"
             }),
             html.Div(id="tabla-ocupacion")
+        ]),
+        
+        # NUEVA Tabla de nivel salarial
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Nivel Salarial", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-nivelsalarial")
+        ])
     ])
-])
 ])
 
 # Callback para manejar el botón "Todos los años"
@@ -800,6 +958,7 @@ def actualizar_tabla_sector(anio_seleccionado, sede_seleccionada):
         anio_seleccionado, 
         sede_seleccionada
     )
+
 @app.callback(
     Output("tabla-ocupacion", "children"),
     [Input("selector-anio", "value"),
@@ -809,6 +968,21 @@ def actualizar_tabla_ocupacion(anio_seleccionado, sede_seleccionada):
     return crear_tabla_con_multianios(
         df_ocupacion, 
         "Ocupación", 
+        "Participantes",
+        anio_seleccionado, 
+        sede_seleccionada
+    )
+
+# NUEVO Callback para la tabla de nivel salarial
+@app.callback(
+    Output("tabla-nivelsalarial", "children"),
+    [Input("selector-anio", "value"),
+     Input("selector-sedes", "value")]
+)
+def actualizar_tabla_nivelsalarial(anio_seleccionado, sede_seleccionada):
+    return crear_tabla_con_multianios(
+        df_nivelsalarial, 
+        "Nivel Salarial", 
         "Participantes",
         anio_seleccionado, 
         sede_seleccionada
