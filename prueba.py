@@ -864,10 +864,7 @@ datos_emprededores=[
     # [TODOS LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE datos_sector]
 # Crear DataFrames con la columna de año
 
-# Crear DataFrames con tus datos
-# [Tus datos aquí...]
-
-# Crear DataFrames con la columna de año
+# Crear DataFrames (los datos deben ser definidos previamente)
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
 df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
@@ -902,7 +899,7 @@ sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist()], ke
 app = dash.Dash(__name__)
 server = app.server
 
-# Función simplificada para crear tablas sin porcentajes ni totales
+# Función para crear tablas
 def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_seleccionado, sede_seleccionada):
     # Filtrar por sede
     df_filtrado = df[df["SEDES"] == sede_seleccionada]
@@ -916,15 +913,23 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
         df_pivot = df_agrupado.pivot(index=categoria_col, columns="Año", values=participantes_col).reset_index()
         df_pivot = df_pivot.fillna(0)
         
-        # Asegurar que todas las columnas de años existan
-        for año in años_disponibles:
-            if str(año) not in df_pivot.columns:
-                df_pivot[str(año)] = 0
+        # Calcular totales
+        años_cols = [str(a) for a in años_disponibles]
+        df_pivot["Total"] = df_pivot[años_cols].sum(axis=1)
+        total_general = df_pivot["Total"].sum()
+        
+        # Calcular porcentajes
+        if total_general > 0:
+            df_pivot["% Total"] = (df_pivot["Total"] / total_general * 100).round(1)
+        else:
+            df_pivot["% Total"] = 0.0
         
         # Crear encabezado
         encabezado = [html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"})]
         for año in años_disponibles:
             encabezado.append(html.Th(año, style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado.append(html.Th("Total", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado.append(html.Th("%", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
         encabezado = [html.Tr(encabezado)]
         
         # Crear filas de datos
@@ -936,7 +941,10 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
                 valor = int(row[str(año)]) if str(año) in df_pivot.columns else 0
                 celdas_anios.append(html.Td(f"{valor:,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}))
             
-            filas.append(html.Tr([celda_categoria] + celdas_anios))
+            celda_total = html.Td(f"{int(row['Total']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            celda_porcentaje = html.Td(f"{row['% Total']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            
+            filas.append(html.Tr([celda_categoria] + celdas_anios + [celda_total, celda_porcentaje]))
         
         # Crear tabla completa
         return html.Table(
@@ -961,17 +969,26 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
             "color": "#dc2626"
         })
     
-    # Crear tabla simple sin porcentajes
+    # Calcular porcentajes
+    total_participantes = df_filtrado[participantes_col].sum()
+    if total_participantes > 0:
+        df_filtrado["Porcentaje"] = (df_filtrado[participantes_col] / total_participantes * 100).round(1)
+    else:
+        df_filtrado["Porcentaje"] = 0.0
+    
+    # Crear tabla simple
     encabezado = html.Tr([
         html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
-        html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
+        html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
+        html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
     ])
     
     filas = []
     for _, row in df_filtrado.iterrows():
         filas.append(html.Tr([
             html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-            html.Td(f"{int(row[participantes_col]):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            html.Td(f"{int(row[participantes_col]):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+            html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
         ]))
     
     return html.Table(
@@ -1242,7 +1259,7 @@ def actualizar_numero_graduados(anio_seleccionado, sede_seleccionada):
             html.Small("Datos de graduados disponibles", style={"color": "#4b5563"})
         ])
 
-# Callbacks para las tablas
+# Callbacks para las tablas principales
 @app.callback(Output("tabla-empleo", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
 def actualizar_tabla_empleo(anio, sede): 
     return crear_tabla_con_multianios(df_empleo, "Conseguir empleo", "Participantes", anio, sede)
@@ -1280,6 +1297,7 @@ def actualizar_tabla_relacion(anio, sede):
     )
     return crear_tabla_con_multianios(df_relacion_mapeado, "Relación formación-empleo", "Participantes", anio, sede)
 
+# Callbacks para las nuevas tablas
 @app.callback(Output("tabla-nivelalcanzado", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
 def actualizar_tabla_nivelalcanzado(anio, sede): 
     return crear_tabla_con_multianios(df_nivelalcanzado, "Nivel de estudios", "Participantes", anio, sede)
