@@ -864,12 +864,7 @@ datos_emprededores=[
     # [TODOS LOS DATOS PERMANECEN IGUALES HASTA EL FINAL DE datos_sector]
 # Crear DataFrames con la columna de año
 
-# ... [datos_graduados, datos_empleo, datos_situacion, datos_sector, datos_ocupacion, datos_nivelsalario, datos_relacion permanecen iguales] ...
-
-# Crear DataFrames con la columna de año
-# ... [los datos permanecen iguales hasta datos_emprededores] ...
-
-# Crear DataFrames con la columna de año
+# Crear DataFrames (los datos deben ser definidos previamente)
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
 df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
@@ -877,23 +872,26 @@ df_sector = pd.DataFrame(datos_sector, columns=["Año", "SEDES", "Sector", "Part
 df_ocupacion = pd.DataFrame(datos_ocupacion, columns=["Año", "SEDES", "Ocupación", "Participantes"])
 df_nivelsalarial = pd.DataFrame(datos_nivelsalario, columns=["Año", "SEDES", "Nivel Salarial", "Participantes"])
 df_relacion = pd.DataFrame(datos_relacion, columns=["Año", "SEDES", "Relación formación-empleo", "Participantes"])
-
-# Nuevos DataFrames
 df_nivelalcanzado = pd.DataFrame(datos_nivelalcanzado, columns=["Año", "SEDES", "Nivel de estudios", "Participantes"])
 df_posgrado = pd.DataFrame(datos_Posgrado, columns=["Año", "SEDES", "Posgrado", "Participantes"])
 df_capacitacion = pd.DataFrame(datos_capacitacion, columns=["Año", "SEDES", "Capacitación", "Participantes"])
 df_emprendedores = pd.DataFrame(datos_emprededores, columns=["Año", "SEDES", "Participantes"])
-df_emprendedores["Categoría"] = "Emprendedores"  # Agregar columna constante para consistencia
+df_emprendedores["Categoría"] = "Emprendedores"
 
 # Convertir a numérico
 df_graduados["Graduados"] = pd.to_numeric(df_graduados["Graduados"], errors="coerce")
-# ... [conversiones numéricas existentes] ...
+df_empleo["Participantes"] = pd.to_numeric(df_empleo["Participantes"], errors="coerce")
+df_situacion["Participantes"] = pd.to_numeric(df_situacion["Participantes"], errors="coerce")
+df_sector["Participantes"] = pd.to_numeric(df_sector["Participantes"], errors="coerce")
+df_ocupacion["Participantes"] = pd.to_numeric(df_ocupacion["Participantes"], errors="coerce")
+df_nivelsalarial["Participantes"] = pd.to_numeric(df_nivelsalarial["Participantes"], errors="coerce")
+df_relacion["Participantes"] = pd.to_numeric(df_relacion["Participantes"], errors="coerce")
 df_nivelalcanzado["Participantes"] = pd.to_numeric(df_nivelalcanzado["Participantes"], errors="coerce")
 df_posgrado["Participantes"] = pd.to_numeric(df_posgrado["Participantes"], errors="coerce")
 df_capacitacion["Participantes"] = pd.to_numeric(df_capacitacion["Participantes"], errors="coerce")
 df_emprendedores["Participantes"] = pd.to_numeric(df_emprendedores["Participantes"], errors="coerce")
 
-# Obtener listas únicas para los dropdowns
+# Obtener listas únicas
 años_disponibles = sorted(df_graduados["Año"].unique().tolist())
 sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist()], key=lambda x: x.lower())
 
@@ -901,6 +899,111 @@ sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist()], ke
 app = dash.Dash(__name__)
 server = app.server
 
+# Función para crear tablas
+def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_seleccionado, sede_seleccionada):
+    # Filtrar por sede
+    df_filtrado = df[df["SEDES"] == sede_seleccionada]
+    
+    # Manejar caso de "Todos los años"
+    if anio_seleccionado == "Todos":
+        # Agrupar por año y categoría
+        df_agrupado = df_filtrado.groupby(["Año", categoria_col])[participantes_col].sum().reset_index()
+        
+        # Pivotar para tener años como columnas
+        df_pivot = df_agrupado.pivot(index=categoria_col, columns="Año", values=participantes_col).reset_index()
+        df_pivot = df_pivot.fillna(0)
+        
+        # Calcular totales
+        años_cols = [str(a) for a in años_disponibles]
+        df_pivot["Total"] = df_pivot[años_cols].sum(axis=1)
+        total_general = df_pivot["Total"].sum()
+        
+        # Calcular porcentajes
+        if total_general > 0:
+            df_pivot["% Total"] = (df_pivot["Total"] / total_general * 100).round(1)
+        else:
+            df_pivot["% Total"] = 0.0
+        
+        # Crear encabezado
+        encabezado = [html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"})]
+        for año in años_disponibles:
+            encabezado.append(html.Th(año, style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado.append(html.Th("Total", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado.append(html.Th("%", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}))
+        encabezado = [html.Tr(encabezado)]
+        
+        # Crear filas de datos
+        filas = []
+        for _, row in df_pivot.iterrows():
+            celda_categoria = html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            celdas_anios = []
+            for año in años_disponibles:
+                valor = int(row[str(año)]) if str(año) in df_pivot.columns else 0
+                celdas_anios.append(html.Td(f"{valor:,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}))
+            
+            celda_total = html.Td(f"{int(row['Total']):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            celda_porcentaje = html.Td(f"{row['% Total']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            
+            filas.append(html.Tr([celda_categoria] + celdas_anios + [celda_total, celda_porcentaje]))
+        
+        # Crear tabla completa
+        return html.Table(
+            encabezado + filas,
+            style={
+                "width": "100%",
+                "borderCollapse": "collapse",
+                "backgroundColor": "white",
+                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
+                "borderRadius": "8px",
+                "overflow": "hidden"
+            }
+        )
+    
+    # Caso para un solo año
+    df_filtrado = df_filtrado[df_filtrado["Año"] == anio_seleccionado]
+    
+    if df_filtrado.empty:
+        return html.Div(f"No hay datos disponibles para {sede_seleccionada} en {anio_seleccionado}", style={
+            "textAlign": "center",
+            "padding": "20px",
+            "color": "#dc2626"
+        })
+    
+    # Calcular porcentajes
+    total_participantes = df_filtrado[participantes_col].sum()
+    if total_participantes > 0:
+        df_filtrado["Porcentaje"] = (df_filtrado[participantes_col] / total_participantes * 100).round(1)
+    else:
+        df_filtrado["Porcentaje"] = 0.0
+    
+    # Crear tabla simple
+    encabezado = html.Tr([
+        html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"}),
+        html.Th("Participantes", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"}),
+        html.Th("Porcentaje", style={"padding": "10px 15px", "textAlign": "right", "fontSize": "14px"})
+    ])
+    
+    filas = []
+    for _, row in df_filtrado.iterrows():
+        filas.append(html.Tr([
+            html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+            html.Td(f"{int(row[participantes_col]):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
+            html.Td(f"{row['Porcentaje']:.1f}%", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+        ]))
+    
+    return html.Table(
+        [encabezado] + filas,
+        style={
+            "width": "100%",
+            "borderCollapse": "collapse",
+            "backgroundColor": "white",
+            "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
+            "borderRadius": "8px",
+            "overflow": "hidden"
+        }
+    )
+
+# Layout de la aplicación
 app.layout = html.Div(style={
     "fontFamily": "Arial, sans-serif",
     "padding": "20px",
@@ -908,7 +1011,6 @@ app.layout = html.Div(style={
     "margin": "0 auto",
     "backgroundColor": "#f8f9fa"
 }, children=[
-    # Título
     html.H1("Análisis de Graduados y Empleo", style={
         "textAlign": "center",
         "color": "#1e3a8a",
@@ -923,7 +1025,6 @@ app.layout = html.Div(style={
         "marginBottom": "30px",
         "alignItems": "flex-end"
     }, children=[
-        # Dropdown para seleccionar año
         html.Div(style={"flex": "1", "minWidth": "200px"}, children=[
             html.Label("Seleccionar Año:", style={"fontWeight": "bold", "marginBottom": "5px"}),
             dcc.Dropdown(
@@ -935,7 +1036,6 @@ app.layout = html.Div(style={
             )
         ]),
         
-        # Dropdown para seleccionar sede
         html.Div(style={"flex": "2", "minWidth": "250px"}, children=[
             html.Label("Seleccionar Sede:", style={"fontWeight": "bold", "marginBottom": "5px"}),
             dcc.Dropdown(
@@ -946,7 +1046,6 @@ app.layout = html.Div(style={
             )
         ]),
         
-        # Botón para mostrar todos los años
         html.Div(style={"flex": "1", "minWidth": "150px"}, children=[
             html.Label("Acción rápida:", style={"fontWeight": "bold", "marginBottom": "5px"}),
             html.Button(
@@ -967,7 +1066,7 @@ app.layout = html.Div(style={
         ])
     ]),
     
-    # Tarjeta para mostrar el número de graduados
+    # Tarjeta de graduados
     html.Div(id="graduados-numero", style={
         "padding": "20px",
         "backgroundColor": "white",
@@ -977,14 +1076,13 @@ app.layout = html.Div(style={
         "textAlign": "center"
     }),
     
-    # Contenedor para las tablas (primera fila)
+    # Primera fila de tablas
     html.Div(style={
         "display": "flex",
         "flexWrap": "wrap",
         "gap": "15px",
         "marginBottom": "30px"
     }, children=[
-        # Tabla de empleo
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Tiempo para Conseguir Empleo", style={
                 "textAlign": "center",
@@ -995,17 +1093,64 @@ app.layout = html.Div(style={
             html.Div(id="tabla-empleo")
         ]),
         
-        # ... [tablas existentes] ...
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Situación Laboral Actual", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-situacion")
+        ]),
+        
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Sector Laboral", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-sector")
+        ]),
+        
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Ocupación Laboral", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-ocupacion")
+        ]),
     ]),
     
-    # NUEVA FILA DE TABLAS
+    # Segunda fila de tablas
     html.Div(style={
         "display": "flex",
         "flexWrap": "wrap",
         "gap": "15px",
         "marginBottom": "30px"
     }, children=[
-        # Tabla de nivel de estudios alcanzado
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Nivel Salarial", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-nivelsalarial")
+        ]),
+        
+        html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
+            html.H2("Relación Formación-Empleo", style={
+                "textAlign": "center",
+                "color": "#1e3a8a",
+                "marginBottom": "20px",
+                "fontSize": "20px"
+            }),
+            html.Div(id="tabla-relacion")
+        ]),
+        
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Nivel de Estudios Alcanzado", style={
                 "textAlign": "center",
@@ -1016,7 +1161,6 @@ app.layout = html.Div(style={
             html.Div(id="tabla-nivelalcanzado")
         ]),
         
-        # Tabla de posgrado
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Estudian Posgrado", style={
                 "textAlign": "center",
@@ -1026,8 +1170,15 @@ app.layout = html.Div(style={
             }),
             html.Div(id="tabla-posgrado")
         ]),
-        
-        # Tabla de capacitación
+    ]),
+    
+    # Tercera fila de tablas
+    html.Div(style={
+        "display": "flex",
+        "flexWrap": "wrap",
+        "gap": "15px",
+        "marginBottom": "30px"
+    }, children=[
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Capacitación", style={
                 "textAlign": "center",
@@ -1038,7 +1189,6 @@ app.layout = html.Div(style={
             html.Div(id="tabla-capacitacion")
         ]),
         
-        # Tabla de emprendedores
         html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
             html.H2("Emprendedores", style={
                 "textAlign": "center",
@@ -1047,68 +1197,122 @@ app.layout = html.Div(style={
                 "fontSize": "20px"
             }),
             html.Div(id="tabla-emprendedores")
-        ])
+        ]),
     ])
 ])
 
-# ... [callbacks existentes] ...
-
-# Nuevos callbacks para las tablas adicionales
+# Callbacks
 @app.callback(
-    Output("tabla-nivelalcanzado", "children"),
+    Output("selector-anio", "value"),
+    Input("boton-todos-anios", "n_clicks"),
+    prevent_initial_call=True
+)
+def manejar_boton_todos_anios(n_clicks):
+    return "Todos"
+
+@app.callback(
+    Output("graduados-numero", "children"),
     [Input("selector-anio", "value"),
      Input("selector-sedes", "value")]
 )
-def actualizar_tabla_nivelalcanzado(anio_seleccionado, sede_seleccionada):
-    return crear_tabla_con_multianios(
-        df_nivelalcanzado, 
-        "Nivel de estudios", 
-        "Participantes",
-        anio_seleccionado, 
-        sede_seleccionada
-    )
+def actualizar_numero_graduados(anio_seleccionado, sede_seleccionada):
+    df_filtrado = df_graduados[df_graduados["SEDES"] == sede_seleccionada]
+    
+    if anio_seleccionado == "Todos":
+        resultado = df_filtrado["Graduados"].sum()
+        return html.Div([
+            html.H3(f"Sede: {sede_seleccionada} (Todos los años)"),
+            html.P(f"Total de graduados: {int(resultado):,}", style={
+                "fontSize": "32px",
+                "color": "#1e3a8a",
+                "fontWeight": "bold",
+                "margin": "10px 0"
+            }),
+            html.Small("Datos acumulados de todos los años", style={"color": "#4b5563"})
+        ])
+    
+    df_filtrado = df_filtrado[df_filtrado["Año"] == anio_seleccionado]
+    
+    if not df_filtrado.empty:
+        resultado = df_filtrado["Graduados"].iloc[0]
+    else:
+        resultado = None
+    
+    if resultado is None or pd.isna(resultado):
+        return html.Div([
+            html.H3(f"Sede: {sede_seleccionada} ({anio_seleccionado})"),
+            html.P("No hay datos disponibles de graduados", style={
+                "fontSize": "24px",
+                "color": "#dc2626",
+                "fontWeight": "bold"
+            })
+        ])
+    else:
+        return html.Div([
+            html.H3(f"Sede: {sede_seleccionada} ({anio_seleccionado})"),
+            html.P(f"Total de graduados: {int(resultado):,}", style={
+                "fontSize": "32px",
+                "color": "#1e3a8a",
+                "fontWeight": "bold",
+                "margin": "10px 0"
+            }),
+            html.Small("Datos de graduados disponibles", style={"color": "#4b5563"})
+        ])
 
-@app.callback(
-    Output("tabla-posgrado", "children"),
-    [Input("selector-anio", "value"),
-     Input("selector-sedes", "value")]
-)
-def actualizar_tabla_posgrado(anio_seleccionado, sede_seleccionada):
-    return crear_tabla_con_multianios(
-        df_posgrado, 
-        "Posgrado", 
-        "Participantes",
-        anio_seleccionado, 
-        sede_seleccionada
-    )
+# Callbacks para las tablas principales
+@app.callback(Output("tabla-empleo", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_empleo(anio, sede): 
+    return crear_tabla_con_multianios(df_empleo, "Conseguir empleo", "Participantes", anio, sede)
 
-@app.callback(
-    Output("tabla-capacitacion", "children"),
-    [Input("selector-anio", "value"),
-     Input("selector-sedes", "value")]
-)
-def actualizar_tabla_capacitacion(anio_seleccionado, sede_seleccionada):
-    return crear_tabla_con_multianios(
-        df_capacitacion, 
-        "Capacitación", 
-        "Participantes",
-        anio_seleccionado, 
-        sede_seleccionada
-    )
+@app.callback(Output("tabla-situacion", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_situacion(anio, sede): 
+    return crear_tabla_con_multianios(df_situacion, "Situación laboral", "Participantes", anio, sede)
 
-@app.callback(
-    Output("tabla-emprendedores", "children"),
-    [Input("selector-anio", "value"),
-     Input("selector-sedes", "value")]
-)
-def actualizar_tabla_emprendedores(anio_seleccionado, sede_seleccionada):
-    return crear_tabla_con_multianios(
-        df_emprendedores, 
-        "Categoría", 
-        "Participantes",
-        anio_seleccionado, 
-        sede_seleccionada
+@app.callback(Output("tabla-sector", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_sector(anio, sede): 
+    return crear_tabla_con_multianios(df_sector, "Sector", "Participantes", anio, sede)
+
+@app.callback(Output("tabla-ocupacion", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_ocupacion(anio, sede): 
+    return crear_tabla_con_multianios(df_ocupacion, "Ocupación", "Participantes", anio, sede)
+
+@app.callback(Output("tabla-nivelsalarial", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_nivelsalarial(anio, sede): 
+    return crear_tabla_con_multianios(df_nivelsalarial, "Nivel Salarial", "Participantes", anio, sede)
+
+@app.callback(Output("tabla-relacion", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_relacion(anio, sede): 
+    mapeo_descripciones = {
+        "1": "1 (Poco relacionado)",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5 (Muy relacionado)",
+        "No aplica": "No aplica",
+        "(en blanco)": "No aplica"
+    }
+    df_relacion_mapeado = df_relacion.copy()
+    df_relacion_mapeado["Relación formación-empleo"] = df_relacion_mapeado["Relación formación-empleo"].map(
+        lambda x: mapeo_descripciones.get(x, x)
     )
+    return crear_tabla_con_multianios(df_relacion_mapeado, "Relación formación-empleo", "Participantes", anio, sede)
+
+# Callbacks para las nuevas tablas
+@app.callback(Output("tabla-nivelalcanzado", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_nivelalcanzado(anio, sede): 
+    return crear_tabla_con_multianios(df_nivelalcanzado, "Nivel de estudios", "Participantes", anio, sede)
+
+@app.callback(Output("tabla-posgrado", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_posgrado(anio, sede): 
+    return crear_tabla_con_multianios(df_posgrado, "Posgrado", "Participantes", anio, sede)
+
+@app.callback(Output("tabla-capacitacion", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_capacitacion(anio, sede): 
+    return crear_tabla_con_multianios(df_capacitacion, "Capacitación", "Participantes", anio, sede)
+
+@app.callback(Output("tabla-emprendedores", "children"), [Input("selector-anio", "value"), Input("selector-sedes", "value")])
+def actualizar_tabla_emprendedores(anio, sede): 
+    return crear_tabla_con_multianios(df_emprendedores, "Categoría", "Participantes", anio, sede)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8050))
