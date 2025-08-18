@@ -2,6 +2,7 @@ import pandas as pd
 import dash
 from dash import dcc, html, Input, Output, State
 import os
+import numpy as np
 from dash import callback_context  # Importar callback_context para manejar eventos
 # Crear DataFrames con tus datos
 datos_graduados = [
@@ -868,6 +869,11 @@ datos_emprededores=[
 # [Tus datos aquí...]
 
 # Crear DataFrames con la columna de año
+
+# Crear DataFrames con tus datos
+# [Tus datos aquí...]
+
+# Crear DataFrames con la columna de año
 df_graduados = pd.DataFrame(datos_graduados, columns=["Año", "SEDES", "Graduados"])
 df_empleo = pd.DataFrame(datos_empleo, columns=["Año", "SEDES", "Conseguir empleo", "Participantes"])
 df_situacion = pd.DataFrame(datos_situacion, columns=["Año", "SEDES", "Situación laboral", "Participantes"])
@@ -902,7 +908,7 @@ sedes_disponibles = sorted([s for s in df_empleo["SEDES"].unique().tolist()], ke
 app = dash.Dash(__name__)
 server = app.server
 
-# Función simplificada para crear tablas sin porcentajes ni totales
+# Función simplificada para crear tablas con ND en lugar de 0
 def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_seleccionado, sede_seleccionada):
     # Filtrar por sede
     df_filtrado = df[df["SEDES"] == sede_seleccionada]
@@ -914,12 +920,11 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
         
         # Pivotar para tener años como columnas
         df_pivot = df_agrupado.pivot(index=categoria_col, columns="Año", values=participantes_col).reset_index()
-        df_pivot = df_pivot.fillna(0)
         
         # Asegurar que todas las columnas de años existan
         for año in años_disponibles:
             if str(año) not in df_pivot.columns:
-                df_pivot[str(año)] = 0
+                df_pivot[str(año)] = np.nan  # Usar NaN para luego reemplazar por ND
         
         # Crear encabezado
         encabezado = [html.Th(categoria_col, style={"padding": "10px 15px", "textAlign": "left", "fontSize": "14px"})]
@@ -933,8 +938,13 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
             celda_categoria = html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
             celdas_anios = []
             for año in años_disponibles:
-                valor = int(row[str(año)]) if str(año) in df_pivot.columns else 0
-                celdas_anios.append(html.Td(f"{valor:,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}))
+                valor = row[str(año)]
+                # Reemplazar 0 y NaN por "ND"
+                if pd.isna(valor) or valor == 0:
+                    texto = "ND"
+                else:
+                    texto = f"{int(valor):,}"
+                celdas_anios.append(html.Td(texto, style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}))
             
             filas.append(html.Tr([celda_categoria] + celdas_anios))
         
@@ -969,9 +979,16 @@ def crear_tabla_con_multianios(df, categoria_col, participantes_col, anio_selecc
     
     filas = []
     for _, row in df_filtrado.iterrows():
+        # Reemplazar 0 y NaN por "ND"
+        valor = row[participantes_col]
+        if pd.isna(valor) or valor == 0:
+            texto_valor = "ND"
+        else:
+            texto_valor = f"{int(valor):,}"
+        
         filas.append(html.Tr([
             html.Td(row[categoria_col], style={"padding": "10px 15px", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"}),
-            html.Td(f"{int(row[participantes_col]):,}", style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
+            html.Td(texto_valor, style={"padding": "10px 15px", "textAlign": "right", "borderBottom": "1px solid #e5e7eb", "fontSize": "14px"})
         ]))
     
     return html.Table(
